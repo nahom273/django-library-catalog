@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        body.dark-mode {
+            background-color: #121212;
+            color: white;
+        }
+        .dark-mode .card {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .dark-mode .navbar {
+            background-color: #333;
+        }
+    </style>
+    
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+        }
+    
+        // Load saved dark mode preference
+        window.onload = () => {
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+            }
+        };
+    </script>
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Catalog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">📚 Library System</a>
+            <div class="ms-auto">
+                <a href="/admin/" class="btn btn-light">🔑 Admin Login</a>
+            </div>
+        </div>
+        <button onclick="toggleDarkMode()" class="btn btn-secondary">🌙 Dark Mode</button>
+
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">📂 Library Catalogs</h1>
+        
+        <div class="row">
+            {% for catalog in catalogs %}
+                <div class="col-md-4">
+                    <div class="card shadow-lg mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">📁 {{ catalog.name }}</h5>
+                            <a href="{% url 'catalog_detail' catalog.id %}" class="btn btn-primary">View {{ catalog.name }}</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted">No catalogs available.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Section to Show Recently Uploaded Media -->
+        <h2 class="text-center mt-5">📸 Recently Uploaded Media</h2>
+        <div class="row">
+            {% for media in media_items %}
+                <div class="col-md-4">
+                    <div class="card shadow-lg mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ media.title }}</h5>
+                            <p class="card-text"><strong>Type:</strong> {{ media.get_media_type_display }}</p>
+                            {% if media.media_type == "video" %}
+                                <video width="100%" controls>
+                                    <source src="{{ media.file.url }}" type="video/mp4">
+                                </video>
+                            {% elif media.media_type == "music" %}
+                                <audio controls>
+                                    <source src="{{ media.file.url }}" type="audio/mpeg">
+                                </audio>
+                            {% elif media.media_type == "document" %}
+                                <p><a href="{{ media.file.url }}" class="btn btn-primary" download>📄 Download Document</a></p>
+                            {% elif media.media_type == "picture" %}
+                                <img src="{{ media.file.url }}" class="img-fluid rounded" alt="{{ media.title }}">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center">No media uploaded yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

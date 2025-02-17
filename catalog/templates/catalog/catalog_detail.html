@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ catalog.name }} - Media Library</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+
+<h3>🎬 Media Items</h3>
+
+<form method="GET" class="mb-3">
+    <input type="text" name="search" class="form-control" placeholder="🔍 Search media..." value="{{ request.GET.search }}">
+</form>
+
+<div class="row">
+    {% for media in media_items %}
+        <div class="col-md-6">
+            <div class="card shadow-lg mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ media.title }}</h5>
+                    <p class="card-text"><strong>Type:</strong> {{ media.get_media_type_display }}</p>
+                    {% if media.media_type == "video" %}
+                        <video width="100%" controls>
+                            <source src="{{ media.file.url }}" type="video/mp4">
+                        </video>
+                    {% elif media.media_type == "music" %}
+                        <audio controls>
+                            <source src="{{ media.file.url }}" type="audio/mpeg">
+                        </audio>
+                    {% elif media.media_type == "document" %}
+                        <p><a href="{{ media.file.url }}" class="btn btn-primary" download>📄 Download Document</a></p>
+                    {% elif media.media_type == "picture" %}
+                        <img src="{{ media.file.url }}" class="img-fluid rounded" alt="{{ media.title }}">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No media items found.</p>
+    {% endfor %}
+</div>
+
+
+    <h1 class="text-center">{{ catalog.name }} - Catalog</h1>
+    <a href="{% url 'home' %}" class="btn btn-secondary mb-4">⬅ Back to Catalogs</a>
+
+    <div class="row">
+        <!-- Members Section -->
+        <div class="col-md-4">
+            <div class="card shadow-lg mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">📋 Members</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for member in catalog.members.all %}
+                        <li class="list-group-item">{{ member.name }}</li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">No members in this catalog.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Media Section -->
+        <div class="col-md-8">
+            <h3>🎬 Media Items</h3>
+            <div class="row">
+                {% for media in media_items %}
+                    <div class="col-md-6">
+                        <div class="card shadow-lg mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ media.title }}</h5>
+                                <p class="card-text"><strong>Type:</strong> {{ media.get_media_type_display }}</p>
+                                {% if media.media_type == "video" %}
+                                    <video width="100%" controls>
+                                        <source src="{{ media.file.url }}" type="video/mp4">
+                                    </video>
+                                {% elif media.media_type == "music" %}
+                                    <audio controls>
+                                        <source src="{{ media.file.url }}" type="audio/mpeg">
+                                    </audio>
+                                {% elif media.media_type == "document" %}
+                                    <p><a href="{{ media.file.url }}" class="btn btn-primary" download>📄 Download Document</a></p>
+                                {% elif media.media_type == "picture" %}
+                                    <img src="{{ media.file.url }}" class="img-fluid rounded" alt="{{ media.title }}">
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No media items available in this catalog.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
